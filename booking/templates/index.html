@@ -19,10 +19,10 @@
         {% for i in room %}
         <tr>
             <td class="text-dark">{{ i.name }}</td>
-            <td>{{ i.open_time|date:'H:i' }} - {{ i.end_time|date:'H:i' }}</td>
+            <td>{{ i.open_time|date:'H:i' }} - {{ i.close_time|date:'H:i' }}</td>
             <td>{{ date|date:'SHORT_DATE_FORMAT' }}</td>
             <td>{{ i.capacity }}</td>
-            <td><a href=" {% url 'booking' id=i.id %} "><button type="button" class="btn btn-primary">จอง</button></a></td>
+            <td><a href=" {% url 'booking' id=i.id bdate=date %} "><button type="button" class="btn btn-primary">จอง</button></a></td>
         </tr>
         {% endfor %}
       </table>
