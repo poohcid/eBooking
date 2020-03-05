@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+    <br><br>
+    <div class="container border rounded bg-white">
+        <br>
+        <h2 class="text-primary">รายการที่ร้องขอ</h2>
+        <br>
+        <table class="table">
+            <tr class="table-info">
+                <th>ชื่อห้อง</th>
+                <th>วันที่</th>
+                <th>เวลา</th>
+                <th>เวลาว่าง</th>
+                <th></th>
+            </tr>
+            {% for i in books %}
+                <tr>
+                    <td>{{ i.room.name }}</td>
+                    <td>{{ i.date|date:'SHORT_DATE_FORMAT' }}</td>
+                    <td>{{ i.start_time|date:'H:i' }} - {{ i.end_time|date:'H:i' }}</td>
+                    <td>{{ i.room.open_time|date:'H:i' }} - {{ i.room.close_time|date:'H:i' }}</td>
+                    <td><a href="{% url 'book_edit' id=i.id %}"><button type="button" class="btn btn-primary">รายละเอียด</button></a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock content %}

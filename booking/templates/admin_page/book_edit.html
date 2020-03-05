@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+    <br><br>
+    <div class="container">
+    <h1>ชื่อห้อง : {{ book.room.name }}</h1>
+        <div class="row">
+            <div class="col-4">
+                <div class="border border-dark rounded bg-light container">
+                    <p>รายละเอียด</p>
+                    <ul>
+                        <li>เวลาเปิด : {{book.room.open_time|date:'H:i'}}</li>
+                        <li>เวลาปิด : {{ book.room.close_time|date:'H:i' }}</li>
+                        <li>ความจุ : {{ book.room.capacity }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-1">
+            </div>
+            <div class="col-7 border border-dark rounded">
+                <br>
+                <p><b>ชื่อบุคคลที่ขอจอง : </b>{{ book.book_by.username }}</p>
+                <p><b>วันที่ขอจอง : </b>{{ book.date|date:'SHORT_DATE_FORMAT'}}</p>
+                <p><b>เวลาที่ขอจอง : </b>{{ book.start_time|date:'H:i' }} - {{ book.end_time|date:'H:i' }}</p>
+                <p><b>เหตุผลการใช้งาน : </b></p>
+                <div class="container border rounded bg-light">
+                    {{ book.description }}
+                    <br><br>
+                </div>
+                <br><br>
+                <form action="{% url 'book_edit' id=book.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="radio form-group">
+                        <label><input type="radio" name="status" value="อนุมัติ" {% if book.status == 'อนุมัติ' %}checked{% endif %}> อนุมัติ</label>
+                    </div>
+                    <div class="radio form-group">
+                        <input type="radio" name="status" value="ไม่อนุมัติ" {% if book.status == 'ไม่อนุมัติ' %}checked{% endif %}> ไม่อนุมัติ <b>เพราะ :</b></label>
+                    </div>
+                    <textarea class="form-control" name="status-remark" id="comment">{{ book.status_remark }}</textarea>
+                    <br>
+                    <button type="submit" class="btn btn-warning">ตกลง</button>
+                </form>
+                <br>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Room(models.Model):
     name = models.CharField(max_length=100)
@@ -21,6 +22,7 @@ class Booking(models.Model):
         ("อนุมัติ", "Yes")
     ), max_length=100)
     status_remark = models.TextField(null=True, blank=True)
+    book_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
     book_date = models.DateField(auto_now=True)
 
     def __str__(self):

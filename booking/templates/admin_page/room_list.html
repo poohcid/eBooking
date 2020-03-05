@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+    <br><br>
+    <div class="container border rounded bg-white">
+        <br>
+        <form action="{% url 'room_list' %}" method="POST">
+            {% csrf_token %}
+            <h3>เพิ่มห้อง</h3>
+            <br>
+            <div class="row">
+                <div class="col-3">
+                    <label for=""><b>ชื่อห้อง : </b></label><input type="text" name="name" class="form-control">
+                </div>
+                <div class="col-2">
+                    <label for=""><b>เวลาเปิด : </b></label><input id="timepicker1" name="open_time" class="form-control">
+                </div>
+                <div class="col-2">
+                    <label for=""><b>เวลาปิด : </b></label><input id="timepicker2" name="close_time" class="form-control">
+                </div>
+                <div class="col-1">
+                    <label for=""><b>ความจุ : </b></label><input type="number" name="capacity" class="form-control">
+                </div>
+                <div class="col-2">
+                    <br>
+                    <label for=""></label>
+                    <button type="submit" class="form-control btn btn-warning">เพิ่ม</button>
+                </div>
+            </div>
+        </form>
+        <br>
+        <table class="table table-striped">
+            <tr class="table-Secondary">
+                <th>ชื่อ</th>
+                <th>เวลาว่าง</th>
+                <th>ความจุ</th>
+                <th></th>
+            </tr>
+            {% for i in room %}
+            <tr>
+                <td class="text-dark">{{ i.name }}</td>
+                <td>{{ i.open_time|date:'H:i' }} - {{ i.close_time|date:'H:i' }}</td>
+                <td>{{ i.capacity }}</td>
+                <td><a href="#"><button type="button" class="btn btn-primary">แก้ไข</button></a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock content %}
