@@ -6,10 +6,10 @@
       <form action="{% url 'date_search' %}" method="GET">
         <div class="row form-group">
             <div class="col">
-              <label>ค้นหาห้อง : </label><input name="text" type="text" class="form-control"/>
+              <label>ค้นหาห้อง : </label><input name="name" type="text" class="form-control"/>
             </div>
             <div class="col">
-              <label>ค้นหาวันว่าง : </label> <input name="date"  class="form-control" id="datepicker"/>
+              <label>ค้นหาวันว่าง : </label> <input name="date"  class="form-control" id="datepicker" required/>
             </div>
             <div class="col">
               <label>ค้นหาเวลาว่าง : </label>
