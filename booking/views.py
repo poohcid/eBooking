@@ -72,15 +72,19 @@ def date_search(request):
     if request.method == 'GET':
         start_time = datetime.time(datetime.strptime(request.GET.get('start_time'), '%H:%M'))
         end_time = datetime.time(datetime.strptime(request.GET.get('end_time'), '%H:%M'))
-        my_date = request.GET.get('date')
-        books = Booking.objects.filter(date=str(datetime.strptime(my_date, '%m/%d/%Y')).split()[0])
+        my_date = str(datetime.strptime(request.GET.get('date'), '%m/%d/%Y')).split()[0]
+        books = Booking.objects.filter(date=my_date)
         list_book = list(books.filter(end_time__lt=start_time).filter(end_time__lt=end_time))
         list_book += list(books.filter(start_time__gt=start_time).filter(start_time__gt=end_time))
-        print(list_book)
+
+        booked = Booking.objects.exclude(pk__in=map(lambda x: x.id, list_book))
+        booked = booked.filter(date=my_date)
+        booked = booked.filter(status='อนุมัติ')
+        context['room'] = Room.objects.exclude(pk__in=map(lambda x: x.room.id, booked))
         if not my_date:
             context['date'] = date.today
         else:
-            context['date'] = datetime.strptime(my_date, '%m/%d/%Y')
+            context['date'] = datetime.strptime(request.GET.get('date'), '%m/%d/%Y')
         return render(request, 'index.html', context=context)
 
 def book_login(request):
