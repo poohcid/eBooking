@@ -2,18 +2,17 @@ from datetime import date, datetime
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
+from django.db import IntegrityError
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from django.urls import reverse
 
 from .models import Booking, Room
 
 
 @login_required
 def book_index(request):
-    print(request.user.groups.all())
     if request.user.is_superuser:
         return redirect("admin/")
     context = {"user" : request.user}
@@ -28,11 +27,10 @@ def book_index(request):
         return render(request, 'admin_page/book_request.html', context=context)
 @login_required
 @permission_required('booking.add_booking')
-def booking(request, id, bdate):
+def booking(request, id):
     try:
         context={
             "room" : Room.objects.get(pk=id),
-            "date" : date.fromisoformat(bdate),
             "user" : request.user
         }
         return render(request, 'booking.html', context=context)
@@ -67,6 +65,7 @@ def book_list(request):
 
 @login_required
 def date_search(request):
+    print(request.GET.get('date'))
     context = {
         "room" : Room.objects.all(),
         "user" : request.user
@@ -76,10 +75,11 @@ def date_search(request):
         if not my_date:
             context['date'] = date.today
         else:
-            context['date'] = date.fromisoformat(my_date)
+            context['date'] = datetime.strptime(my_date, '%m/%d/%Y')
         return render(request, 'index.html', context=context)
 
 def book_login(request):
+    context = {}
     if request.method == 'POST':
         username = request.POST.get('username')
         passwprd = request.POST.get('password')
@@ -87,7 +87,32 @@ def book_login(request):
         if user:
             login(request, user)
             return redirect('index')
-    return render(request, 'login.html', context={})
+        else:
+            context['error'] = 'รหัสผ่านไม่ถูกต้อง'
+    return render(request, 'login.html', context=context)
+
+def book_sign_in(request):
+    context = {}
+    if request.method == 'POST':
+        if request.POST.get('password1') == request.POST.get('password2'):
+            try:
+                user = User.objects.create_user(
+                    username = request.POST.get('username'),
+                    email = request.POST.get('email'),
+                    password = request.POST.get('password1')
+                )
+                user.first_name = request.POST.get('first_name')
+                user.last_name = request.POST.get('last_name')
+                my_group = Group.objects.get(name='member')
+                user.groups.add(my_group)
+                user.save()
+                login(request, user)
+                return redirect('index')
+            except IntegrityError:
+                context['error'] = 'ชื่อนี้มีคนใช้ไปแล้ว'
+        else:
+            context['error'] = 'โปรดกรอกรหัสให้ตรงกัน'
+    return render(request, 'sign_in.html', context=context)
 
 @login_required
 def book_logout(request):
@@ -102,6 +127,7 @@ def book_edit(request, id):
         book.status = request.POST.get('status')
         book.status_remark = request.POST.get('status-remark')
         book.save()
+        return redirect('index')
     context={
         "book" : book
     }
@@ -124,4 +150,19 @@ def room_list(request):
     return render(request, 'admin_page/room_list.html', context=context)
 
 def room_edit(request, id):
-    pass
+    context = {
+        "room" : Room.objects.get(pk=id)
+    }
+    if request.method == "POST":
+        room = context["room"]
+        if request.POST.get('delete'):
+            room.delete()
+            return redirect('room_list')
+        else:
+            room.name = request.POST.get('name')
+            room.open_time = request.POST.get('open_time')
+            room.close_time = request.POST.get('close_time')
+            room.capacity = request.POST.get('capacity')
+            room.save()
+            return redirect('room_list')
+    return render(request, 'admin_page/room_edit.html', context=context)

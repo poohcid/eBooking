@@ -53,7 +53,7 @@
                     <li class="nav-item"><span class="navbar-brand">Hello, {{ user.username }}</span></li>
                     <li class="nav-item"><a href="/book_logout/" class="nav-link">Logout</a></li>
                 {% else %}
-                    <li class="nav-item"><a href="#" class="nav-link">Sign in</a></li>
+                    <li class="nav-item"><a href="/book_sign_in/" class="nav-link">Sign in</a></li>
                     <li class="nav-item"><a href="/book_login/" class="nav-link">Login</a></li>
                 {% endif %}
             </ul>
@@ -73,6 +73,15 @@
             uiLibrary: 'bootstrap',
             language: 'en',
         });
+        function alert_cofrim(text) {
+            let result = confirm(text);
+            if (result){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
     </script>
 </body>
 </html>

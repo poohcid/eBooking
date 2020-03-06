@@ -11,7 +11,7 @@ class Room(models.Model):
         return self.name
 
 class Booking(models.Model):
-    room = models.ForeignKey(Room, on_delete=models.PROTECT, null=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField(null=True)
@@ -22,7 +22,7 @@ class Booking(models.Model):
         ("อนุมัติ", "Yes")
     ), max_length=100)
     status_remark = models.TextField(null=True, blank=True)
-    book_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
+    book_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     book_date = models.DateField(auto_now=True)
 
     def __str__(self):

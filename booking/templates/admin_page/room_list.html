@@ -9,16 +9,16 @@
             <br>
             <div class="row">
                 <div class="col-3">
-                    <label for=""><b>ชื่อห้อง : </b></label><input type="text" name="name" class="form-control">
+                    <label for=""><b>ชื่อห้อง : </b></label><input type="text" name="name" class="form-control" required>
                 </div>
                 <div class="col-2">
-                    <label for=""><b>เวลาเปิด : </b></label><input id="timepicker1" name="open_time" class="form-control">
+                    <label for=""><b>เวลาเปิด : </b></label><input id="timepicker1" name="open_time" class="form-control" required>
                 </div>
                 <div class="col-2">
-                    <label for=""><b>เวลาปิด : </b></label><input id="timepicker2" name="close_time" class="form-control">
+                    <label for=""><b>เวลาปิด : </b></label><input id="timepicker2" name="close_time" class="form-control" required>
                 </div>
                 <div class="col-1">
-                    <label for=""><b>ความจุ : </b></label><input type="number" name="capacity" class="form-control">
+                    <label for=""><b>ความจุ : </b></label><input type="number" name="capacity" class="form-control" required>
                 </div>
                 <div class="col-2">
                     <br>
@@ -40,7 +40,7 @@
                 <td class="text-dark">{{ i.name }}</td>
                 <td>{{ i.open_time|date:'H:i' }} - {{ i.close_time|date:'H:i' }}</td>
                 <td>{{ i.capacity }}</td>
-                <td><a href="#"><button type="button" class="btn btn-primary">แก้ไข</button></a></td>
+                <td><a href="{% url 'room_edit' id=i.id %}"><button type="button" class="btn btn-primary">แก้ไข</button></a></td>
             </tr>
             {% endfor %}
         </table>

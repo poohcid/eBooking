@@ -11,6 +11,7 @@
                 <th>วันที่</th>
                 <th>เวลา</th>
                 <th>เวลาว่าง</th>
+                <th>สถานะ</th>
                 <th></th>
             </tr>
             {% for i in books %}
@@ -19,6 +20,11 @@
                     <td>{{ i.date|date:'SHORT_DATE_FORMAT' }}</td>
                     <td>{{ i.start_time|date:'H:i' }} - {{ i.end_time|date:'H:i' }}</td>
                     <td>{{ i.room.open_time|date:'H:i' }} - {{ i.room.close_time|date:'H:i' }}</td>
+                    <td>
+                        <span class="text-{% if i.status == 'อนุมัติ' %}success{% endif %}{% if i.status == 'ไม่อนุมัติ' %}danger{% endif %}">
+                            {{ i.status|default_if_none:"รออนุมัติ" }}
+                        </span>
+                    </td>
                     <td><a href="{% url 'book_edit' id=i.id %}"><button type="button" class="btn btn-primary">รายละเอียด</button></a></td>
                 </tr>
             {% endfor %}

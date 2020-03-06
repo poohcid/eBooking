@@ -23,14 +23,14 @@
                     {% csrf_token %}
                     <div class="row form-group">
                         <label class="col-2">วันที่จอง : </label>
-                        <input class="col-10" id="datepicker" name="date" width="200" selectedday="{{ date }}" value="{{ date|date:"SHORT_DATE_FORMAT"}}"/>
+                        <input class="col-10" id="datepicker" name="date" width="200" selectedday="{{ date }}" value="{{ date|date:"SHORT_DATE_FORMAT"}}" required/>
                     </div>
                     <br>
                     <div class="row form-group">
                             <label class="col">ตั้งแต่เวลา : </label>
-                            <input id="timepicker1" name="start_time" class="col" width="200">
+                            <input id="timepicker1" name="start_time" class="col" width="200" required>
                             <label class="col">ถึงเวลา : </label>
-                            <input id="timepicker2" name="end_time" class="col" width="200">
+                            <input id="timepicker2" name="end_time" class="col" width="200" required>
                     </div>
                     <br>
                     <div class="form-group">

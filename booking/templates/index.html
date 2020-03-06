@@ -4,10 +4,26 @@
     <div class="container border rounded bg-white">
       <br><br>
       <form action="{% url 'date_search' %}" method="GET">
-        <label>ค้นหาวันว่าง : </label> <input name="date" width="150" class="form-contorl" type="date"/>
-        <button type="submit" >ค้นหา</button>
-        <script>
-        </script>
+        <div class="row form-group">
+            <div class="col">
+              <label>ค้นหาห้อง : </label><input name="text" type="text" class="form-control"/>
+            </div>
+            <div class="col">
+              <label>ค้นหาวันว่าง : </label> <input name="date"  class="form-control" id="datepicker"/>
+            </div>
+            <div class="col">
+              <label>ค้นหาเวลาว่าง : </label>
+              <input id="timepicker1" name="start_time" class="form-control" required></div>
+            <div class="col">
+              <label for="">ถึง :</label>
+              <input id="timepicker2" name="end_time" class="form-control" required>
+            </div>
+            <div class="col">
+              <br>
+              <label for=""></label>
+              <button type="submit" class="btn btn-secondary form-control">ค้นหา</button>
+            </div>
+        </div>
       </form>
         <table class="table table-striped">
           <tr class="table-Secondary">
@@ -23,7 +39,7 @@
               <td>{{ i.open_time|date:'H:i' }} - {{ i.close_time|date:'H:i' }}</td>
               <td>{{ date|date:'SHORT_DATE_FORMAT' }}</td>
               <td>{{ i.capacity }}</td>
-              <td><a href=" {% url 'booking' id=i.id bdate=date %} "><button type="button" class="btn btn-primary">จอง</button></a></td>
+              <td><a href=" {% url 'booking' id=i.id %} "><button type="button" class="btn btn-primary">จอง</button></a></td>
           </tr>
           {% endfor %}
         </table>

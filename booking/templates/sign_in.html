@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+    <br><br>
+    <div class="container">
+        <div class="row">
+            <div class="col"></div>
+            <form action="{% url 'sign in' %}" class="col border rounded bg-light" method="POST">
+                {% csrf_token %}
+                {% if error %}
+                    <p class="text-danger">*{{ error }}</p>
+                {% endif %}
+                <h3 class="text-center">Sign In</h3>
+                <br>
+                <div class="form-group">
+                    <label for="">Username : </label>
+                    <input type="text" name="username" class="form-control" required>
+                </div>
+                <div class="row form-group">
+                    <div class="col">
+                        <label for="">ชื่อ : </label>
+                        <input type="text" name="first_name" class="form-control" required>
+                    </div>
+                    <div class="col">
+                        <label for="">นามสกุล : </label>
+                        <input type="text" name="last_name" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="">Email : </label>
+                    <input type="email" name="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Password : </label>
+                    <input type="password" name="password1" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Confrim password : </label>
+                    <input type="password" name="password2" class="form-control" required>
+                </div>
+                <div class="row form-group">
+                    <div class="col"></div>
+                    <button type="submit" class="col-8 btn btn-warning">SIGN IN</button>
+                    <div class="col"></div>
+                </div>
+            </form>
+            <div class="col"></div>
+        </div>
+    </div>
+{% endblock content %}
