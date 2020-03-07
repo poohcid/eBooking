@@ -28,8 +28,7 @@
         <table class="table table-striped">
           <tr class="table-Secondary">
               <th>ชื่อ</th>
-              <th>เวลาว่าง</th>
-              <th>วันว่าง</th>
+              <th>เวลาเปิด - ปิด</th>
               <th>ความจุ</th>
               <th></th>
           </tr>
@@ -37,7 +36,6 @@
           <tr>
               <td class="text-dark">{{ i.name }}</td>
               <td>{{ i.open_time|date:'H:i' }} - {{ i.close_time|date:'H:i' }}</td>
-              <td>{{ date|date:'SHORT_DATE_FORMAT' }}</td>
               <td>{{ i.capacity }}</td>
               <td><a href=" {% url 'booking' id=i.id %} "><button type="button" class="btn btn-primary">จอง</button></a></td>
           </tr>

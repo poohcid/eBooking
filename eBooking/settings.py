@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'booking',
+    'account',
 ]
 
 MIDDLEWARE = [
@@ -120,4 +121,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-LOGIN_URL = '/book_login/'
+LOGIN_URL = '/account/book_login/'

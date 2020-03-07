@@ -22,10 +22,11 @@
                 <p><b>วันที่ขอจอง : </b>{{ book.date|date:'SHORT_DATE_FORMAT'}}</p>
                 <p><b>เวลาที่ขอจอง : </b>{{ book.start_time|date:'H:i' }} - {{ book.end_time|date:'H:i' }}</p>
                 <p><b>เหตุผลการใช้งาน : </b></p>
-                <div class="container border rounded bg-light">
+                {% comment %} <div class="container border rounded bg-light">
                     {{ book.description }}
                     <br><br>
-                </div>
+                </div> {% endcomment %}
+                <textarea class="form-control" name="descrip" rows="5" id="comment" readonly>{{ book.description }}</textarea>
                 <br><br>
                 <form action="{% url 'book_edit' id=book.id %}" method="POST">
                     {% csrf_token %}

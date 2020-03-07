@@ -41,16 +41,27 @@ def booking(request, id):
 @permission_required('booking.add_booking')
 def save_booking(request, id):
     if request.method == "POST":
-        book = Booking(
-            room = Room.objects.get(pk=id),
-            date = str(datetime.strptime(request.POST.get('date'), '%m/%d/%Y')).split()[0],
-            start_time = request.POST.get("start_time"),
-            end_time = request.POST.get("end_time"),
-            description = request.POST.get("descrip"),
-            book_by = request.user
-        )
-        book.save()
-        return redirect('book_list')
+        room = Room.objects.get(pk=id)
+        start_time = datetime.time(datetime.strptime(request.POST.get('start_time'), '%H:%M'))
+        end_time = datetime.time(datetime.strptime(request.POST.get('end_time'), '%H:%M'))
+        if (room.open_time <= start_time and room.close_time >=  end_time) and (end_time > start_time):
+            book = Booking(
+                room = room,
+                date = str(datetime.strptime(request.POST.get('date'), '%m/%d/%Y')).split()[0],
+                start_time = request.POST.get("start_time"),
+                end_time = request.POST.get("end_time"),
+                description = request.POST.get("descrip"),
+                book_by = request.user
+            )
+            book.save()
+            return redirect('book_list')
+        else:
+            context = {
+                "room" : Room.objects.get(pk=id),
+                "user" : request.user,
+                "error" : "ไม่สามารถจองในช่วงเวลาดังกล่าวได้"
+            }
+            return render(request, 'booking.html', context=context)
     else:
         return redirect('index')
 
@@ -80,53 +91,17 @@ def date_search(request):
         booked = Booking.objects.exclude(pk__in=map(lambda x: x.id, list_book))
         booked = booked.filter(date=my_date)
         booked = booked.filter(status='อนุมัติ')
+
         context['room'] = Room.objects.exclude(pk__in=map(lambda x: x.room.id, booked))
+        # context['room'] = context['room'].filter(open_time__lte=start_time)
+        # context['room'] = context['room'].filter(close_time__gte=end_time)
+        if request.GET.get('name'):
+            context['room'] = context['room'].filter(name__contains=request.GET.get('name'))
         if not my_date:
             context['date'] = date.today
         else:
             context['date'] = datetime.strptime(request.GET.get('date'), '%m/%d/%Y')
         return render(request, 'index.html', context=context)
-
-def book_login(request):
-    context = {}
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        passwprd = request.POST.get('password')
-        user = authenticate(request, username=username, password=passwprd)
-        if user:
-            login(request, user)
-            return redirect('index')
-        else:
-            context['error'] = 'รหัสผ่านไม่ถูกต้อง'
-    return render(request, 'login.html', context=context)
-
-def book_sign_in(request):
-    context = {}
-    if request.method == 'POST':
-        if request.POST.get('password1') == request.POST.get('password2'):
-            try:
-                user = User.objects.create_user(
-                    username = request.POST.get('username'),
-                    email = request.POST.get('email'),
-                    password = request.POST.get('password1')
-                )
-                user.first_name = request.POST.get('first_name')
-                user.last_name = request.POST.get('last_name')
-                my_group = Group.objects.get(name='member')
-                user.groups.add(my_group)
-                user.save()
-                login(request, user)
-                return redirect('index')
-            except IntegrityError:
-                context['error'] = 'ชื่อนี้มีคนใช้ไปแล้ว'
-        else:
-            context['error'] = 'โปรดกรอกรหัสให้ตรงกัน'
-    return render(request, 'sign_in.html', context=context)
-
-@login_required
-def book_logout(request):
-    logout(request)
-    return redirect('login')
 
 @login_required
 @permission_required('booking.change_booking')
@@ -159,19 +134,22 @@ def room_list(request):
     return render(request, 'admin_page/room_list.html', context=context)
 
 def room_edit(request, id):
-    context = {
-        "room" : Room.objects.get(pk=id)
-    }
-    if request.method == "POST":
-        room = context["room"]
-        if request.POST.get('delete'):
-            room.delete()
-            return redirect('room_list')
-        else:
-            room.name = request.POST.get('name')
-            room.open_time = request.POST.get('open_time')
-            room.close_time = request.POST.get('close_time')
-            room.capacity = request.POST.get('capacity')
-            room.save()
-            return redirect('room_list')
-    return render(request, 'admin_page/room_edit.html', context=context)
+    try:
+        context = {
+            "room" : Room.objects.get(pk=id)
+        }
+        if request.method == "POST":
+            room = context["room"]
+            if request.POST.get('delete'):
+                room.delete()
+                return redirect('room_list')
+            else:
+                room.name = request.POST.get('name')
+                room.open_time = request.POST.get('open_time')
+                room.close_time = request.POST.get('close_time')
+                room.capacity = request.POST.get('capacity')
+                room.save()
+                return redirect('room_list')
+        return render(request, 'admin_page/room_edit.html', context=context)
+    except Room.DoesNotExist:
+        return redirect('room_list')

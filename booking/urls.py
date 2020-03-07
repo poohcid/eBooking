@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.urls import path
 from . import views
 
@@ -8,9 +7,6 @@ urlpatterns = [
     path('booking/<int:id>/', views.booking, name="booking"),
     path('save_booking/<int:id>/', views.save_booking, name="save_booking"),
     path('book_list/', views.book_list, name="book_list"),
-    path('book_login/', views.book_login, name="login"),
-    path('book_sign_in/', views.book_sign_in, name="sign in"),
-    path('book_logout/', views.book_logout, name="logout"),
     path('book_edit/<int:id>/', views.book_edit, name="book_edit"),
     path('room_list/', views.room_list, name="room_list"),
     path('room_edit/<int:id>/', views.room_edit, name="room_edit")
