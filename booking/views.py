@@ -37,17 +37,33 @@ def booking(request, id):
     except Room.DoesNotExist:
         return redirect('index')
 
+
+#ค้นหาห้องที่เวลาไม่ชนในวันนั้น
+def booked_filter(date, start_time, end_time):
+    books = Booking.objects.filter(date=date)
+    list_book = list(books.filter(end_time__lt=start_time).filter(end_time__lt=end_time))
+    list_book += list(books.filter(start_time__gt=start_time).filter(start_time__gt=end_time))
+    booked = Booking.objects.exclude(pk__in=map(lambda x: x.id, list_book))
+    booked = booked.filter(date=date)
+    booked = booked.filter(status='อนุมัติ')
+    return Room.objects.exclude(pk__in=map(lambda x: x.room.id, booked))
+
+
 @login_required
 @permission_required('booking.add_booking')
 def save_booking(request, id):
     if request.method == "POST":
         room = Room.objects.get(pk=id)
+        date = str(datetime.strptime(request.POST.get('date'), '%m/%d/%Y')).split()[0]
         start_time = datetime.time(datetime.strptime(request.POST.get('start_time'), '%H:%M'))
         end_time = datetime.time(datetime.strptime(request.POST.get('end_time'), '%H:%M'))
-        if (room.open_time <= start_time and room.close_time >=  end_time) and (end_time > start_time):
+        print(booked_filter(date, start_time, end_time))
+        if (room.open_time <= start_time and room.close_time >=  end_time) and (end_time > start_time) and \
+            (room in booked_filter(date, start_time, end_time)):
+
             book = Booking(
                 room = room,
-                date = str(datetime.strptime(request.POST.get('date'), '%m/%d/%Y')).split()[0],
+                date = date,
                 start_time = request.POST.get("start_time"),
                 end_time = request.POST.get("end_time"),
                 description = request.POST.get("descrip"),
@@ -84,15 +100,12 @@ def date_search(request):
         start_time = datetime.time(datetime.strptime(request.GET.get('start_time'), '%H:%M'))
         end_time = datetime.time(datetime.strptime(request.GET.get('end_time'), '%H:%M'))
         my_date = str(datetime.strptime(request.GET.get('date'), '%m/%d/%Y')).split()[0]
-        books = Booking.objects.filter(date=my_date)
-        list_book = list(books.filter(end_time__lt=start_time).filter(end_time__lt=end_time))
-        list_book += list(books.filter(start_time__gt=start_time).filter(start_time__gt=end_time))
 
-        booked = Booking.objects.exclude(pk__in=map(lambda x: x.id, list_book))
-        booked = booked.filter(date=my_date)
-        booked = booked.filter(status='อนุมัติ')
-
-        context['room'] = Room.objects.exclude(pk__in=map(lambda x: x.room.id, booked))
+        context['room'] = booked_filter(
+            date = my_date,
+            start_time = start_time,
+            end_time = end_time
+        )
         # context['room'] = context['room'].filter(open_time__lte=start_time)
         # context['room'] = context['room'].filter(close_time__gte=end_time)
         if request.GET.get('name'):
