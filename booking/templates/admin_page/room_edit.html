@@ -5,7 +5,7 @@
         <br>
         <form action="{% url 'room_edit' id=room.id %}" method="POST">
             {% csrf_token %}
-            <h3>แก้ไขห้อง : {{ room.name }}</h3>
+            <h3 class="text-primary">แก้ไขห้อง : {{ room.name }}</h3>
             <br>
             <div class="row">
                 <div class="col-2">
