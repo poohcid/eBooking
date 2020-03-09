@@ -97,23 +97,32 @@ def date_search(request):
         "user" : request.user
     }
     if request.method == 'GET':
-        start_time = datetime.time(datetime.strptime(request.GET.get('start_time'), '%H:%M'))
-        end_time = datetime.time(datetime.strptime(request.GET.get('end_time'), '%H:%M'))
-        my_date = str(datetime.strptime(request.GET.get('date'), '%m/%d/%Y')).split()[0]
+        if (request.GET.get('date') and request.GET.get('start_time') and request.GET.get('end_time')):
+            try:
+                start_time = datetime.time(datetime.strptime(request.GET.get('start_time'), '%H:%M'))
+                end_time = datetime.time(datetime.strptime(request.GET.get('end_time'), '%H:%M'))
+                my_date = str(datetime.strptime(request.GET.get('date'), '%m/%d/%Y')).split()[0]
 
-        context['room'] = booked_filter(
-            date = my_date,
-            start_time = start_time,
-            end_time = end_time
-        )
-        # context['room'] = context['room'].filter(open_time__lte=start_time)
-        # context['room'] = context['room'].filter(close_time__gte=end_time)
-        if request.GET.get('name'):
+                context['room'] = booked_filter(
+                    date = my_date,
+                    start_time = start_time,
+                    end_time = end_time
+                )
+                # context['room'] = context['room'].filter(open_time__lte=start_time)
+                # context['room'] = context['room'].filter(close_time__gte=end_time)
+                if request.GET.get('name'):
+                    context['room'] = context['room'].filter(name__contains=request.GET.get('name'))
+                if not my_date:
+                    context['date'] = date.today
+                else:
+                    context['date'] = datetime.strptime(request.GET.get('date'), '%m/%d/%Y')
+            except ValueError:
+                context['error'] = 'โปรดกรอกวันและเวลาให้ถูกต้อง'
+                return render(request, 'index.html', context=context)
+        elif request.GET.get('name'):
             context['room'] = context['room'].filter(name__contains=request.GET.get('name'))
-        if not my_date:
-            context['date'] = date.today
         else:
-            context['date'] = datetime.strptime(request.GET.get('date'), '%m/%d/%Y')
+            context['error'] = 'โปรดกรอกวันและเวลาให้ครบถ้วน'
         return render(request, 'index.html', context=context)
 
 @login_required

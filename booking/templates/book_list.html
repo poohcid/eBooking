@@ -16,8 +16,8 @@
             {% for book in books %}
             <tr>
                 <td>{{ book.room.name }}</td>
-                <td>{{ book.date|date:"SHORT_DATE_FORMAT" }}</td>
-                <td>{{ book.start_time|date:"H:i" }} - {{ book.end_time|date:"H:i" }}</td>
+                <td class="text-info">{{ book.date|date:"SHORT_DATE_FORMAT" }}</td>
+                <td class="text-primary">{{ book.start_time|date:"H:i" }} - {{ book.end_time|date:"H:i" }}</td>
                 <td>{{ book.room.open_time|date:"H:i" }} - {{ book.room.close_time|date:"H:i" }}</td>
                 <td><span class="text-{% if book.status == 'อนุมัติ' %}success{% endif %}{% if book.status == 'ไม่อนุมัติ' %}danger{% endif %}">
                         {% if book.status == 'ไม่อนุมัติ' %}
