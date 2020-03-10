@@ -33,16 +33,16 @@
         <br>
         <table class="table table-striped">
             <tr class="table-Secondary">
-                <th>ชื่อ</th>
-                <th>เวลาเปิด - ปิด</th>
+                <th>ชื่อห้อง</th>
                 <th>ความจุ</th>
+                <th>เวลาเปิด - ปิด</th>
                 <th></th>
             </tr>
             {% for i in room %}
             <tr>
                 <td class="text-info">{{ i.name }}</td>
-                <td>{{ i.open_time|date:'H:i' }} - {{ i.close_time|date:'H:i' }}</td>
                 <td>{{ i.capacity }}</td>
+                <td>{{ i.open_time|date:'H:i' }} - {{ i.close_time|date:'H:i' }}</td>
                 <td><a href="{% url 'room_edit' id=i.id %}"><button type="button" class="btn btn-primary">แก้ไข</button></a></td>
             </tr>
             {% endfor %}

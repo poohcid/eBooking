@@ -52,31 +52,36 @@ def booked_filter(date, start_time, end_time):
 @login_required
 @permission_required('booking.add_booking')
 def save_booking(request, id):
+    context = {
+        "room" : Room.objects.get(pk=id),
+        "user" : request.user
+    }
     if request.method == "POST":
-        room = Room.objects.get(pk=id)
-        date = str(datetime.strptime(request.POST.get('date'), '%m/%d/%Y')).split()[0]
-        start_time = datetime.time(datetime.strptime(request.POST.get('start_time'), '%H:%M'))
-        end_time = datetime.time(datetime.strptime(request.POST.get('end_time'), '%H:%M'))
-        print(booked_filter(date, start_time, end_time))
-        if (room.open_time <= start_time and room.close_time >=  end_time) and (end_time > start_time) and \
-            (room in booked_filter(date, start_time, end_time)):
+        try:
+            context["descrip"] = request.POST.get('descrip')
+            room = Room.objects.get(pk=id)
+            date = str(datetime.strptime(request.POST.get('date'), '%m/%d/%Y')).split()[0]
+            start_time = datetime.time(datetime.strptime(request.POST.get('start_time'), '%H:%M'))
+            end_time = datetime.time(datetime.strptime(request.POST.get('end_time'), '%H:%M'))
 
-            book = Booking(
-                room = room,
-                date = date,
-                start_time = request.POST.get("start_time"),
-                end_time = request.POST.get("end_time"),
-                description = request.POST.get("descrip"),
-                book_by = request.user
-            )
-            book.save()
-            return redirect('book_list')
-        else:
-            context = {
-                "room" : Room.objects.get(pk=id),
-                "user" : request.user,
-                "error" : "ไม่สามารถจองในช่วงเวลาดังกล่าวได้"
-            }
+            if (room.open_time <= start_time and room.close_time >=  end_time) and (end_time > start_time) and \
+                (room in booked_filter(date, start_time, end_time)): #ตรวจสอบห้องที่ยังไม่ได้จอง ในวันและเวลาที่เลือก
+
+                book = Booking(
+                    room = room,
+                    date = date,
+                    start_time = request.POST.get("start_time"),
+                    end_time = request.POST.get("end_time"),
+                    description = request.POST.get("descrip"),
+                    book_by = request.user
+                )
+                book.save()
+                return redirect('book_list')
+            else:
+                context["error"] = "ไม่สามารถจองในช่วงเวลาดังกล่าวได้"
+                return render(request, 'booking.html', context=context)
+        except ValueError:
+            context["error"] = "โปรดกรอกวันและเวลาให้ถูกต้อง"
             return render(request, 'booking.html', context=context)
     else:
         return redirect('index')

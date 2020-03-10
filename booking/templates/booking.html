@@ -35,9 +35,9 @@
                     <br>
                     <div class="form-group">
                         <label>เหตุผลการใช้งาน : </label>
-                        <textarea class="form-control" name="descrip" rows="5" id="comment"></textarea>
+                        <textarea class="form-control" name="descrip" rows="5" id="comment">{% if descrip %}{{ descrip }}{% endif %}</textarea>
                     </div class="form-group">
-                        <button type="submit" class="btn btn-warning"> จอง </button>
+                        <button type="submit" class="btn btn-warning" onclick="return alert_cofrim('คุณต้องการจะจองใช่หรือไม่')"> จอง </button>
                     <div>
                     </div>
                 </form>
