@@ -8,7 +8,7 @@
             <h3>เพิ่มห้อง</h3>
             <br>
             <div class="row">
-                <div class="col-3">
+                <div class="col-4">
                     <label for=""><b>ชื่อห้อง : </b></label>
                     <input type="text" name="name" class="form-control" required>
                 </div>
@@ -20,7 +20,7 @@
                     <label for=""><b>เวลาปิด : </b></label>
                     <input id="timepicker2" name="close_time" class="form-control" required>
                 </div>
-                <div class="col-1">
+                <div class="col-2">
                     <label for=""><b>ความจุ : </b></label><input type="number" name="capacity" class="form-control" required>
                 </div>
                 <div class="col-1">
@@ -41,7 +41,7 @@
             {% for i in room %}
             <tr>
                 <td class="text-info">{{ i.name }}</td>
-                <td>{{ i.capacity }}</td>
+                <td>{{ i.capacity }} คน</td>
                 <td>{{ i.open_time|date:'H:i' }} - {{ i.close_time|date:'H:i' }}</td>
                 <td><a href="{% url 'room_edit' id=i.id %}"><button type="button" class="btn btn-primary">แก้ไข</button></a></td>
             </tr>

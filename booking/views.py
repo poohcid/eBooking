@@ -10,7 +10,7 @@ from django.shortcuts import redirect, render
 
 from .models import Booking, Room
 
-
+#หน้าแรก
 @login_required
 def book_index(request):
     if request.user.is_superuser:
@@ -25,6 +25,8 @@ def book_index(request):
     else:
         context["books"] = Booking.objects.all().order_by('book_date')[::-1]
         return render(request, 'admin_page/book_request.html', context=context)
+
+#จองห้อง
 @login_required
 @permission_required('booking.add_booking')
 def booking(request, id):
@@ -49,6 +51,7 @@ def booked_filter(date, start_time, end_time):
     return Room.objects.exclude(pk__in=map(lambda x: x.room.id, booked))
 
 
+#บันทึกการจองแล้ว redirect ไปหน้าประวัติการจอง
 @login_required
 @permission_required('booking.add_booking')
 def save_booking(request, id):
@@ -63,7 +66,7 @@ def save_booking(request, id):
             date = str(datetime.strptime(request.POST.get('date'), '%m/%d/%Y')).split()[0]
             start_time = datetime.time(datetime.strptime(request.POST.get('start_time'), '%H:%M'))
             end_time = datetime.time(datetime.strptime(request.POST.get('end_time'), '%H:%M'))
-
+            
             if (room.open_time <= start_time and room.close_time >=  end_time) and (end_time > start_time) and \
                 (room in booked_filter(date, start_time, end_time)): #ตรวจสอบห้องที่ยังไม่ได้จอง ในวันและเวลาที่เลือก
 
@@ -78,7 +81,7 @@ def save_booking(request, id):
                 book.save()
                 return redirect('book_list')
             else:
-                context["error"] = "ไม่สามารถจองในช่วงเวลาดังกล่าวได้"
+                context["error"] = "ไม่สามารถจองในช่วงเวลาดังกล่าวได้ อาจจะเพราะเกินเวลาห้องหรือห้องนี้มีคนจองไปแล้ว"
                 return render(request, 'booking.html', context=context)
         except ValueError:
             context["error"] = "โปรดกรอกวันและเวลาให้ถูกต้อง"
@@ -86,6 +89,7 @@ def save_booking(request, id):
     else:
         return redirect('index')
 
+#ดูประวัติการจอง
 @login_required
 @permission_required('booking.view_booking')
 def book_list(request):
@@ -95,6 +99,7 @@ def book_list(request):
     }
     return render(request, 'book_list.html', context=context)
 
+#ค้นหาห้องที่เวลาไม่ทับกับเวลาที่ค้นหา
 @login_required
 def date_search(request):
     context = {
@@ -130,6 +135,7 @@ def date_search(request):
             context['error'] = 'โปรดกรอกวันและเวลาให้ครบถ้วน'
         return render(request, 'index.html', context=context)
 
+#[admin] แก้ไขการจอง
 @login_required
 @permission_required('booking.change_booking')
 def book_edit(request, id):
@@ -144,7 +150,9 @@ def book_edit(request, id):
     }
     return render(request, 'admin_page/book_edit.html', context=context)
 
+#[admin] ดูรายการห้อง
 @login_required
+@permission_required('booking.add_room')
 def room_list(request):
     if request.method == "POST":
         room = Room(
@@ -160,6 +168,9 @@ def room_list(request):
     }
     return render(request, 'admin_page/room_list.html', context=context)
 
+#[admin] แก้ไขห้องและลบห้อง
+@login_required
+@permission_required('booking.change_room', 'booking.delete_booking')
 def room_edit(request, id):
     try:
         context = {

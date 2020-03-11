@@ -35,7 +35,7 @@
           {% for i in room %}
           <tr>
               <td class="text-info">{{ i.name }}</td>
-              <td>{{ i.capacity }}</td>
+              <td>{{ i.capacity }} คน</td>
               <td>{{ i.open_time|date:'H:i' }} - {{ i.close_time|date:'H:i' }}</td>
               <td><a href=" {% url 'booking' id=i.id %} "><button type="button" class="btn btn-primary">จอง</button></a></td>
           </tr>
