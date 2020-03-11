@@ -120,8 +120,8 @@ def date_search(request):
                     start_time = start_time,
                     end_time = end_time
                 )
-                # context['room'] = context['room'].filter(open_time__lte=start_time)
-                # context['room'] = context['room'].filter(close_time__gte=end_time)
+                context['room'] = context['room'].filter(open_time__lte=start_time)
+                context['room'] = context['room'].filter(close_time__gte=end_time)
                 if request.GET.get('name'):
                     context['room'] = context['room'].filter(name__contains=request.GET.get('name'))
                 if not my_date:
