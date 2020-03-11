@@ -3,12 +3,14 @@ from datetime import date, datetime
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import Group, User
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
 from .models import Booking, Room
+
 
 #หน้าแรก
 @login_required
@@ -150,18 +152,34 @@ def book_edit(request, id):
     }
     return render(request, 'admin_page/book_edit.html', context=context)
 
+def isRange_time(start_time, end_time):
+    st = datetime.time(datetime.strptime(start_time, '%H:%M'))
+    et = datetime.time(datetime.strptime(end_time, '%H:%M'))
+    if st > et:
+        print(111)
+        return False
+    return True
+
 #[admin] ดูรายการห้อง
 @login_required
 @permission_required('booking.add_room')
 def room_list(request):
     if request.method == "POST":
-        room = Room(
-            name = request.POST.get('name'),
-            open_time = request.POST.get('open_time'),
-            close_time = request.POST.get('close_time'),
-            capacity = request.POST.get('capacity')
-        )
-        room.save()
+        try:
+            room = Room(
+                name = request.POST.get('name'),
+                open_time = request.POST.get('open_time'),
+                close_time = request.POST.get('close_time'),
+                capacity = request.POST.get('capacity')
+            )
+            room.save()
+        except ValidationError:
+            context = {
+                "user" : request.user,
+                "room" : Room.objects.all(),
+                'error' : 'โปรดใส่เวลาให้ถูกต้อง'
+            }
+            return render(request, 'admin_page/room_list.html', context=context)
     context = {
         "user" : request.user,
         "room" : Room.objects.all()
@@ -189,5 +207,9 @@ def room_edit(request, id):
                 room.save()
                 return redirect('room_list')
         return render(request, 'admin_page/room_edit.html', context=context)
+    except ValidationError:
+        context['error'] = 'โปรดใส่เวลาให้ถูกต้อง'
+        return render(request, 'admin_page/room_edit.html', context=context)
+
     except Room.DoesNotExist:
         return redirect('room_list')
