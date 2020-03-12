@@ -6,6 +6,8 @@ from django.shortcuts import redirect, render
 
 def book_login(request):
     context = {}
+    if request.user.is_authenticated:
+        return redirect('/')
     if request.method == 'POST':
         username = request.POST.get('username')
         passwprd = request.POST.get('password')
@@ -19,6 +21,8 @@ def book_login(request):
 
 def book_register(request):
     context = {}
+    if request.user.is_authenticated:
+        return redirect('/')
     if request.method == 'POST':
         if request.POST.get('password1') == request.POST.get('password2'):
             try:
