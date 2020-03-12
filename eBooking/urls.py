@@ -19,6 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls, name="admin"),
-    path('', include("booking.urls")),
-    path('account/', include("account.urls"))
+    path('', include("booking.urls")), #หน้าใช้งานที่เป็น user
+    path('account/', include("account.urls")) #หน้า login/register
 ]
